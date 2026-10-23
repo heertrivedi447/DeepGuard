@@ -55,10 +55,7 @@ export function useWebcam(): UseWebcamReturn {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let frameCount = 0;
-
     const renderSynthetic = () => {
-      frameCount++;
       const time = performance.now() * 0.002;
 
       // Dark cyber gradient background
@@ -85,8 +82,8 @@ export function useWebcam(): UseWebcamReturn {
       }
 
       // Simulated Subject Face Silhouette
-      const cx = 320 + Math.sin(time * 0.8) * 20;
-      const cy = 240 + Math.cos(time * 0.6) * 12;
+      const cx = 320 + Math.sin(time * 0.8) * 16;
+      const cy = 240 + Math.cos(time * 0.6) * 10;
 
       // Outer head contour
       ctx.save();
@@ -122,12 +119,6 @@ export function useWebcam(): UseWebcamReturn {
       ctx.lineWidth = 2;
       ctx.stroke();
       ctx.restore();
-
-      // Technical HUD overlays on synthetic feed
-      ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
-      ctx.font = '12px monospace';
-      ctx.fillText(`DEEPGUARD SYNTHETIC TEST FEED [SIM_ID: #${(frameCount % 9999).toString().padStart(4, '0')}]`, 20, 30);
-      ctx.fillText(`SENSOR: VIRTUAL 640x480 @ 25FPS`, 20, 48);
 
       simAnimationRef.current = requestAnimationFrame(renderSynthetic);
     };
@@ -206,7 +197,6 @@ export function useWebcam(): UseWebcamReturn {
       const errorMsg = err instanceof Error ? err.message : 'Failed to access webcam';
       console.warn('Webcam acquisition warning:', errorMsg);
       setError(errorMsg);
-      // Automatically fallback to simulated feed if camera permission or hardware is unavailable
       startSimulatedFeed();
     } finally {
       setIsLoading(false);
@@ -232,7 +222,7 @@ export function useWebcam(): UseWebcamReturn {
     return () => {
       stopCamera();
     };
-  }, []); // Run on mount
+  }, []);
 
   return {
     videoRef,

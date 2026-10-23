@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CameraOff, Camera as CameraIcon, UploadCloud, Eye, EyeOff } from 'lucide-react';
+import { CameraOff, Camera as CameraIcon, UploadCloud } from 'lucide-react';
 import { FaceRoiOverlay } from './FaceRoiOverlay';
 import type { DeepGuardTelemetry, InputSourceMode } from '../../services/types';
 
@@ -26,12 +26,10 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
   onStopCamera,
   onUploadFile,
 }) => {
-  const [showEyeLandmarks, setShowEyeLandmarks] = useState(false);
   const [snapshotTaken, setSnapshotTaken] = useState(false);
 
   const isGenuine = telemetry?.fusion.is_genuine ?? true;
-  const verdict = telemetry?.fusion.verdict ?? 'GENUINE';
-  const confidence = telemetry?.fusion.confidence_pct ?? 96;
+  const verdict = isGenuine ? 'Identity Verified' : 'Verification Failed';
 
   // Session time formatting
   const sessionSec = telemetry?.session_time_seconds ?? 0;
@@ -50,20 +48,16 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
 
     ctx.drawImage(videoRef.current, 0, 0, 640, 480);
 
-    // Subtle forensic watermark
+    // Simple clean watermark
     ctx.fillStyle = 'rgba(11, 13, 17, 0.85)';
     ctx.fillRect(0, 444, 640, 36);
     ctx.fillStyle = '#9CA3AF';
     ctx.font = '12px Inter, sans-serif';
-    ctx.fillText(
-      `DEEPGUARD KYC FORENSIC AUDIT • VERDICT: ${verdict} (${confidence}%) • FRAME #${telemetry?.frame_index || 0}`,
-      14,
-      466
-    );
+    ctx.fillText(`DEEPGUARD VERIFICATION SNAPSHOT • STATUS: ${verdict}`, 16, 466);
 
     const a = document.createElement('a');
     a.href = canvas.toDataURL('image/png');
-    a.download = `deepguard_kyc_audit_${Date.now()}.png`;
+    a.download = `deepguard_verification_${Date.now()}.png`;
     a.click();
 
     setSnapshotTaken(true);
@@ -80,7 +74,7 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
     <div className="flex flex-col w-full space-y-3">
       {/* Video Stage: 16:10 rounded container (border-radius: 12px) */}
       <div className="relative w-full aspect-[16/10] bg-[#0E1118] rounded-[12px] border-hairline overflow-hidden shadow-sm">
-        {/* Hidden Canvas for 40-50ms Frame Dispatcher */}
+        {/* Hidden Canvas for Frame Processing */}
         <canvas ref={canvasRef} className="hidden" width={640} height={480} />
 
         {/* Video Element */}
@@ -94,14 +88,9 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
           }`}
         />
 
-        {/* Non-Intrusive Overlays (Thin 1.5px corner brackets & 12 landmarks) */}
+        {/* Friendly Oval Outline Overlay with "Position your face here." */}
         {isActive && (
-          <FaceRoiOverlay
-            faceRoi={telemetry?.plane_b_ear.face_roi}
-            eyeLandmarks={telemetry?.plane_b_ear.eye_landmarks}
-            showEyeLandmarks={showEyeLandmarks}
-            isGenuine={isGenuine}
-          />
+          <FaceRoiOverlay isGenuine={isGenuine} />
         )}
 
         {/* Inactive or Upload Mode Overlay */}
@@ -110,15 +99,15 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
             <div className="w-12 h-12 rounded-full bg-white/[0.04] border-hairline flex items-center justify-center mb-3">
               <CameraOff className="w-5 h-5 text-gray-400" />
             </div>
-            <p className="text-sm font-medium text-gray-300">Optical KYC Sensor Inactive</p>
-            <p className="text-xs text-gray-500 mt-1 mb-4">
-              Enable local webcam or run test feed to initiate multi-plane biometric verification.
+            <p className="text-sm font-medium text-gray-300">Camera Offline</p>
+            <p className="text-xs text-gray-500 mt-1 mb-4 text-center max-w-sm">
+              Please enable your webcam to begin face verification.
             </p>
             <button
               onClick={onStartCamera}
               className="px-4 py-2 text-xs font-medium text-gray-200 bg-white/[0.08] hover:bg-white/[0.12] border-hairline rounded-lg transition-colors cursor-pointer"
             >
-              {isLoading ? 'Connecting Sensor...' : 'Connect Video KYC Stream'}
+              {isLoading ? 'Connecting Camera...' : 'Start Camera'}
             </button>
           </div>
         )}
@@ -128,7 +117,7 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
           <label className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-[#0E1118]/90 z-20 cursor-pointer hover:bg-[#0E1118]/80 transition-colors">
             <UploadCloud className="w-8 h-8 text-gray-400 mb-2" />
             <span className="text-sm font-medium text-gray-200">Drop KYC Video File Here</span>
-            <span className="text-xs text-gray-500 mt-1">Supports MP4, WebM (H.264 / AV1)</span>
+            <span className="text-xs text-gray-500 mt-1">Supports MP4, WebM</span>
             <input
               type="file"
               accept="video/*"
@@ -141,78 +130,50 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
         {/* Snapshot feedback pill */}
         {snapshotTaken && (
           <div className="absolute top-3 right-3 bg-black/80 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-1 rounded-full z-30 font-medium">
-            Forensic snapshot saved
+            Photo captured
           </div>
         )}
       </div>
 
-      {/* Bottom Viewport Bar: Session timer, frame counter, snapshot, and calm status pill */}
-      <div className="w-full flex flex-wrap items-center justify-between gap-3 px-3 py-2.5 bg-[#12161F] border-hairline rounded-lg">
-        {/* Left: Session Timer & Frame Counter */}
-        <div className="flex items-center gap-4 text-xs font-mono-tabular text-gray-400">
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>SESSION: <strong className="text-gray-200">{minStr}:{secStr}</strong></span>
-          </div>
-          <span>•</span>
-          <div>
-            <span>FRAME: <strong className="text-gray-200">#{telemetry?.frame_index || 0}</strong></span>
-          </div>
+      {/* Bottom Viewport Bar: Clean session timer, snapshot, and status */}
+      <div className="w-full flex flex-wrap items-center justify-between gap-3 px-3.5 py-2.5 bg-[#12161F] border-hairline rounded-lg">
+        {/* Left: Clean Session Timer (Frame counter removed) */}
+        <div className="flex items-center gap-2 text-xs font-mono-tabular text-gray-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>SESSION: <strong className="text-gray-200">{minStr}:{secStr}</strong></span>
         </div>
 
-        {/* Center: Subtle Landmark Toggle & Camera Toggle */}
-        <div className="flex items-center gap-2">
+        {/* Center: Camera Actions */}
+        {isActive && (
           <button
-            onClick={() => setShowEyeLandmarks((prev) => !prev)}
-            className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded border transition-colors cursor-pointer ${
-              showEyeLandmarks
-                ? 'bg-cyan-950/40 text-cyan-300 border-cyan-500/30'
-                : 'bg-white/[0.03] text-gray-400 border-white/[0.06] hover:text-gray-200'
-            }`}
-            title="Toggle visibility of the 12 eye contour landmarks"
+            onClick={onStopCamera}
+            className="text-[11px] text-gray-400 hover:text-gray-200 px-2.5 py-1 rounded border border-white/[0.06] hover:bg-white/[0.04] transition-colors cursor-pointer"
           >
-            {showEyeLandmarks ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            <span>{showEyeLandmarks ? '12 Eye Landmarks Active' : 'Clean Feed'}</span>
+            Turn Off Camera
           </button>
+        )}
 
-          {isActive && (
-            <button
-              onClick={onStopCamera}
-              className="text-[11px] text-gray-400 hover:text-gray-200 px-2 py-1 rounded border border-white/[0.06] transition-colors"
-            >
-              Stop Cam
-            </button>
-          )}
-        </div>
-
-        {/* Right: Snapshot & Calm Status Pill */}
+        {/* Right: Snapshot & Clean Status Pill */}
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleSnapshot}
             className="px-2.5 py-1 text-xs text-gray-300 bg-white/[0.04] hover:bg-white/[0.08] border-hairline rounded transition-colors cursor-pointer flex items-center gap-1.5"
-            title="Export timestamped snapshot"
+            title="Capture photo snapshot"
           >
             <CameraIcon className="w-3.5 h-3.5 text-gray-400" />
-            <span>Audit Frame</span>
+            <span>Take Photo</span>
           </button>
 
-          {/* Calm Status Pill */}
+          {/* Simple binary status indicator */}
           <div
-            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium border ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold border ${
               isGenuine
                 ? 'bg-emerald-500/[0.08] text-emerald-400 border-emerald-500/20'
                 : 'bg-red-500/[0.08] text-red-400 border-red-500/20'
             }`}
           >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                isGenuine ? 'bg-emerald-400' : 'bg-red-400'
-              }`}
-            />
-            <span className="font-semibold tracking-wide">
-              {isGenuine ? 'GENUINE IDENTITY' : 'SYNTHETIC SPOOF DETECTED'}
-            </span>
-            <span className="font-mono-tabular opacity-75">({confidence}%)</span>
+            <span>{isGenuine ? '✅' : '⚠️'}</span>
+            <span>{isGenuine ? 'Identity Verified' : 'Verification Failed'}</span>
           </div>
         </div>
       </div>

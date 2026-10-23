@@ -1,86 +1,49 @@
 import React from 'react';
-import type { EyeLandmark, FaceROI } from '../../services/types';
 
 interface FaceRoiOverlayProps {
-  faceRoi?: FaceROI;
-  eyeLandmarks?: EyeLandmark[];
-  showEyeLandmarks: boolean;
-  isGenuine: boolean;
+  isGenuine?: boolean;
 }
 
-export const FaceRoiOverlay: React.FC<FaceRoiOverlayProps> = ({
-  faceRoi,
-  eyeLandmarks = [],
-  showEyeLandmarks,
-  isGenuine,
-}) => {
-  if (!faceRoi) return null;
-
-  // Face bounding box percentages
-  const left = faceRoi.x * 100;
-  const top = faceRoi.y * 100;
-  const width = faceRoi.width * 100;
-  const height = faceRoi.height * 100;
-
-  const bracketColor = isGenuine
-    ? 'border-emerald-400/80 text-emerald-400'
-    : 'border-red-400/80 text-red-400';
-
+export const FaceRoiOverlay: React.FC<FaceRoiOverlayProps> = ({ isGenuine = true }) => {
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden select-none">
-      {/* Subtle Center Face Alignment Silhouette Guide */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-        <div className="w-[42%] h-[68%] rounded-[50%/60%] border border-dashed border-white/30" />
-      </div>
+    <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center select-none">
+      {/* Friendly SVG Oval Guide */}
+      <div className="relative w-[52%] max-w-[280px] aspect-[3/4] flex flex-col items-center justify-center">
+        <svg
+          viewBox="0 0 300 400"
+          className="w-full h-full overflow-visible"
+          fill="none"
+        >
+          {/* Subtle Outer Glow / Stroke */}
+          <ellipse
+            cx="150"
+            cy="195"
+            rx="110"
+            ry="150"
+            stroke={isGenuine ? 'rgba(16, 185, 129, 0.65)' : 'rgba(239, 68, 68, 0.65)'}
+            strokeWidth="2"
+            strokeDasharray="6 6"
+            className="transition-colors duration-300"
+          />
 
-      {/* Thin 1.5px Corner L-Brackets around Face ROI */}
-      <div
-        className="absolute transition-all duration-150 ease-out"
-        style={{
-          left: `${left}%`,
-          top: `${top}%`,
-          width: `${width}%`,
-          height: `${height}%`,
-        }}
-      >
-        {/* Top-Left Bracket */}
-        <div
-          className={`absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] ${bracketColor}`}
-        />
-        {/* Top-Right Bracket */}
-        <div
-          className={`absolute top-0 right-0 w-3 h-3 border-t-[1.5px] border-r-[1.5px] ${bracketColor}`}
-        />
-        {/* Bottom-Left Bracket */}
-        <div
-          className={`absolute bottom-0 left-0 w-3 h-3 border-b-[1.5px] border-l-[1.5px] ${bracketColor}`}
-        />
-        {/* Bottom-Right Bracket */}
-        <div
-          className={`absolute bottom-0 right-0 w-3 h-3 border-b-[1.5px] border-r-[1.5px] ${bracketColor}`}
-        />
+          {/* Soft inner corner ticks */}
+          <ellipse
+            cx="150"
+            cy="195"
+            rx="102"
+            ry="142"
+            stroke="rgba(255, 255, 255, 0.12)"
+            strokeWidth="1"
+          />
+        </svg>
 
-        {/* Quiet ROI Tag */}
-        <div className="absolute -top-5 left-0 flex items-center gap-1.5 font-mono-tabular text-[10px] text-gray-400">
-          <span className="bg-black/60 px-1 py-0.5 rounded border border-white/10">
-            ROI: {(faceRoi.confidence * 100).toFixed(1)}%
+        {/* Friendly instruction text */}
+        <div className="absolute -bottom-7 left-0 right-0 flex justify-center">
+          <span className="text-xs font-medium tracking-wide text-gray-200 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10 shadow-sm">
+            Position your face here.
           </span>
         </div>
       </div>
-
-      {/* 12-Point Eye Landmarks (p1..p6) only when toggle is active */}
-      {showEyeLandmarks &&
-        eyeLandmarks.map((landmark, idx) => (
-          <div
-            key={idx}
-            className="absolute w-1.5 h-1.5 -ml-[3px] -mt-[3px] rounded-full bg-cyan-400/90 shadow-[0_0_4px_rgba(0,229,255,0.6)] transition-all duration-100"
-            style={{
-              left: `${landmark.x * 100}%`,
-              top: `${landmark.y * 100}%`,
-            }}
-            title={`${landmark.eye} ${landmark.id}`}
-          />
-        ))}
     </div>
   );
 };
