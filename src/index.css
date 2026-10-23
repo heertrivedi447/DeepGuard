@@ -2,35 +2,30 @@
 
 @layer base {
   :root {
-    /* True Charcoal Black Canvas & Card Surfaces (No Navy/Blue Tint) */
+    /* Dark Background & Neubrutalist Glass Surfaces */
     --canvas-bg: #0A0B0E;
-    --surface-card: #12141A;
-    --surface-card-hover: #161822;
-    --surface-elevated: #1A1C25;
-    --surface-pill: rgba(255, 255, 255, 0.04);
+    --surface-glass: rgba(14, 19, 29, 0.72);
+    --surface-glass-hover: rgba(20, 27, 42, 0.82);
+    --surface-elevated: rgba(22, 30, 48, 0.85);
+    --surface-pill: rgba(255, 255, 255, 0.05);
+
+    /* Neubrutalist Outlines & Hairlines */
     --border-hairline: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.16);
+    --border-teal: rgba(0, 151, 167, 0.35);
+    --border-indigo: rgba(30, 58, 138, 0.45);
+    --border-gold: rgba(234, 179, 8, 0.35);
 
     /* Text Colors */
     --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
 
-    /* Palette from Image 5: Electric Violet & Vibrant Coral/Orange */
-    --accent-violet: #9333EA;
-    --accent-violet-light: #A855F7;
-    --accent-violet-bg: rgba(147, 51, 234, 0.12);
-    --accent-violet-border: rgba(168, 85, 247, 0.35);
-
-    --accent-coral: #FF5733;
-    --accent-coral-light: #FF6B4A;
-    --accent-coral-bg: rgba(255, 87, 51, 0.12);
-    --accent-coral-border: rgba(255, 87, 51, 0.35);
-
-    /* Status Mint / Emerald */
-    --status-emerald: #10B981;
-    --status-emerald-bg: rgba(16, 185, 129, 0.10);
-    --status-emerald-border: rgba(16, 185, 129, 0.28);
+    /* Core Neubrutalist Cyber Palette */
+    --color-indigo: #1E3A8A;
+    --color-teal: #0097A7;
+    --color-teal-glow: #00D2E5;
+    --color-gold: #EAB308;
+    --color-emerald: #10B981;
   }
 
   body {
@@ -51,42 +46,55 @@
   }
 }
 
-/* Hairline border utilities */
-.border-hairline {
+/* Frosted Glass Neubrutalist Panels */
+.frosted-glass-card {
+  background: rgba(14, 19, 29, 0.70);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-.border-hairline-hover:hover {
-  border-color: rgba(255, 255, 255, 0.16);
+.frosted-glass-card:hover {
+  border-color: rgba(0, 151, 167, 0.25);
 }
 
-/* Soft ambient glow utilities inspired by reference images */
-.glow-violet {
-  box-shadow: 0 0 24px rgba(168, 85, 247, 0.22);
+/* Active Cyber Glowing Network Nodes */
+@keyframes breathing-teal-indigo {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(0, 151, 167, 0.35), 0 0 16px rgba(30, 58, 138, 0.2);
+    border-color: rgba(0, 151, 167, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(0, 151, 167, 0.75), 0 0 36px rgba(30, 58, 138, 0.45);
+    border-color: rgba(0, 151, 167, 0.85);
+  }
 }
 
-.glow-coral {
-  box-shadow: 0 0 24px rgba(255, 87, 51, 0.22);
+.breathing-node-glow {
+  animation: breathing-teal-indigo 2.8s ease-in-out infinite;
 }
 
-.glow-emerald {
-  box-shadow: 0 0 24px rgba(16, 185, 129, 0.20);
-}
-
-/* Rounded pill chip from Reference Image 4 */
+/* Rounded Frosted Pill Chip */
 .pill-chip {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 9999px;
   backdrop-filter: blur(8px);
 }
 
 .pill-chip:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 151, 167, 0.3);
 }
 
-/* Minimalist scrollbars */
+/* Cyber Matrix Background Grid */
+.cyber-grid-pattern {
+  background-image: radial-gradient(rgba(0, 151, 167, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Minimalist cyber scrollbars */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -95,9 +103,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 151, 167, 0.25);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(0, 151, 167, 0.5);
 }

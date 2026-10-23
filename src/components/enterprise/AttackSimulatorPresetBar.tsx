@@ -22,45 +22,48 @@ export const AttackSimulatorPresetBar: React.FC<AttackSimulatorPresetBarProps> =
     {
       id: 'GENUINE_LIVE_USER',
       title: '1. Genuine Live User',
-      description: 'Natural eye blinks, authentic facial dynamics',
-      icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />,
-      accentColor: '#10B981',
-      activeBorder: 'border-emerald-500/40 bg-emerald-500/[0.08] shadow-[0_0_12px_rgba(16,185,129,0.15)]',
+      description: 'Natural eye blinks, authentic biological dynamics',
+      icon: <ShieldCheck className="w-3.5 h-3.5 text-[#0097A7]" />,
+      accentColor: '#0097A7',
+      activeBorder: 'border-[#0097A7]/50 bg-[#0097A7]/[0.12] shadow-[0_0_16px_rgba(0,151,167,0.25)]',
     },
     {
       id: 'STATIC_PHOTO_REPLAY',
       title: '2. Static Photo / Replay',
       description: 'Zero ocular movement, flat biological response',
-      icon: <Copy className="w-3.5 h-3.5 text-amber-400" />,
-      accentColor: '#F59E0B',
-      activeBorder: 'border-amber-500/40 bg-amber-500/[0.08] shadow-[0_0_12px_rgba(245,158,11,0.15)]',
+      icon: <Copy className="w-3.5 h-3.5 text-[#EAB308]" />,
+      accentColor: '#EAB308',
+      activeBorder: 'border-[#EAB308]/50 bg-[#EAB308]/[0.12] shadow-[0_0_16px_rgba(234,179,8,0.25)]',
     },
     {
       id: 'FACESWAP_BOUNDARY_SPLICE',
       title: '3. Face-Swap Boundary Splice',
       description: 'Digital boundary splicing and edge alterations',
-      icon: <Scissors className="w-3.5 h-3.5 text-[#FF6B4A]" />,
-      accentColor: '#FF5733',
-      activeBorder: 'border-[#FF5733]/40 bg-[#FF5733]/[0.08] shadow-[0_0_12px_rgba(255,87,51,0.2)]',
+      icon: <Scissors className="w-3.5 h-3.5 text-amber-400" />,
+      accentColor: '#F59E0B',
+      activeBorder: 'border-amber-500/50 bg-amber-500/[0.12] shadow-[0_0_16px_rgba(245,158,11,0.25)]',
     },
     {
       id: 'GAN_UPSAMPLING_STREAM',
       title: '4. GAN Upsampling Stream',
       description: 'Synthetic generative artifacts & neural manifold drift',
-      icon: <Sparkles className="w-3.5 h-3.5 text-violet-400" />,
-      accentColor: '#9333EA',
-      activeBorder: 'border-violet-500/40 bg-violet-500/[0.08] shadow-[0_0_12px_rgba(147,51,234,0.2)]',
+      icon: <Sparkles className="w-3.5 h-3.5 text-indigo-400" />,
+      accentColor: '#1E3A8A',
+      activeBorder: 'border-indigo-500/50 bg-[#1E3A8A]/[0.35] shadow-[0_0_16px_rgba(30,58,138,0.4)]',
     },
   ];
 
   return (
-    <div className="w-full bg-[#12141A] border border-white/[0.08] rounded-[16px] p-4 shadow-sm">
+    <div className="w-full frosted-glass-card rounded-[18px] p-4 shadow-lg">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs uppercase font-medium tracking-wider text-gray-400">
-          Forensic Attack Simulation Bench
-        </span>
-        <span className="text-[11px] text-gray-400">
-          Evaluate multi-plane response across threat models
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-[#0097A7] shadow-[0_0_8px_#0097A7]" />
+          <span className="text-xs uppercase font-semibold tracking-wider text-gray-300">
+            Forensic Attack Simulation Bench
+          </span>
+        </div>
+        <span className="text-[11px] font-mono text-gray-400">
+          CYBER-THREAT MATRIX // MULTI-PLANE RESPONSE
         </span>
       </div>
 
@@ -74,7 +77,7 @@ export const AttackSimulatorPresetBar: React.FC<AttackSimulatorPresetBarProps> =
               className={`p-3 text-left rounded-xl border transition-all cursor-pointer ${
                 isSelected
                   ? `${p.activeBorder} text-white`
-                  : 'bg-[#171922] border-white/[0.06] hover:bg-[#1C1F2B] hover:border-white/[0.12] text-gray-300'
+                  : 'bg-[#0E131F]/50 border-white/[0.06] hover:bg-[#141B2B]/60 hover:border-white/[0.12] text-gray-300'
               }`}
             >
               <div className="flex items-center gap-1.5 font-semibold text-xs">

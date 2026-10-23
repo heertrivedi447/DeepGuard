@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CameraOff, Camera as CameraIcon, UploadCloud, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { FaceRoiOverlay } from './FaceRoiOverlay';
 import type { DeepGuardTelemetry, InputSourceMode } from '../../services/types';
 
@@ -48,12 +49,14 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
 
     ctx.drawImage(videoRef.current, 0, 0, 640, 480);
 
-    // Forensic watermark on charcoal black
-    ctx.fillStyle = 'rgba(10, 11, 14, 0.90)';
+    // Forensic watermark on obsidian neubrutalist panel
+    ctx.fillStyle = 'rgba(10, 11, 14, 0.92)';
     ctx.fillRect(0, 444, 640, 36);
-    ctx.fillStyle = '#94A3B8';
-    ctx.font = '12px Inter, sans-serif';
-    ctx.fillText(`DEEPGUARD VERIFICATION SNAPSHOT • STATUS: ${verdict}`, 16, 466);
+    ctx.fillStyle = '#0097A7';
+    ctx.font = 'bold 11px Inter, sans-serif';
+    ctx.fillText('DEEPGUARD // CYBER-INTEGRITY SCANNER', 16, 466);
+    ctx.fillStyle = isGenuine ? '#10B981' : '#EAB308';
+    ctx.fillText(`STATUS: ${verdict}`, 440, 466);
 
     const a = document.createElement('a');
     a.href = canvas.toDataURL('image/png');
@@ -72,10 +75,62 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
 
   return (
     <div className="flex flex-col w-full space-y-3.5">
-      {/* Video Stage: 16:10 rounded container on Charcoal Black */}
-      <div className="relative w-full aspect-[16/10] bg-[#0A0B0E] rounded-[16px] border border-white/[0.08] overflow-hidden shadow-xl">
+      {/* Video Stage: 16:10 rounded container with frosted glass border and cyber scanner */}
+      <div className="relative w-full aspect-[16/10] bg-[#0A0B0E] rounded-[18px] border border-white/[0.09] hover:border-[#0097A7]/40 overflow-hidden shadow-2xl transition-all">
         {/* Hidden Canvas for Frame Processing */}
         <canvas ref={canvasRef} className="hidden" width={640} height={480} />
+
+        {/* 1. Subtle Minimal Crosshairs in Corners of Video Container */}
+        {/* Top-Left Corner Crosshair */}
+        <div className="pointer-events-none absolute top-3.5 left-3.5 z-30 flex items-center justify-center">
+          <div className="w-4 h-4 border-t-2 border-l-2 border-[#0097A7]" />
+          <div className="absolute w-1 h-1 bg-[#EAB308] rounded-full top-0 left-0" />
+        </div>
+        {/* Top-Right Corner Crosshair */}
+        <div className="pointer-events-none absolute top-3.5 right-3.5 z-30 flex items-center justify-center">
+          <div className="w-4 h-4 border-t-2 border-r-2 border-[#0097A7]" />
+          <div className="absolute w-1 h-1 bg-[#EAB308] rounded-full top-0 right-0" />
+        </div>
+        {/* Bottom-Left Corner Crosshair */}
+        <div className="pointer-events-none absolute bottom-3.5 left-3.5 z-30 flex items-center justify-center">
+          <div className="w-4 h-4 border-b-2 border-l-2 border-[#0097A7]" />
+          <div className="absolute w-1 h-1 bg-[#EAB308] rounded-full bottom-0 left-0" />
+        </div>
+        {/* Bottom-Right Corner Crosshair */}
+        <div className="pointer-events-none absolute bottom-3.5 right-3.5 z-30 flex items-center justify-center">
+          <div className="w-4 h-4 border-b-2 border-r-2 border-[#0097A7]" />
+          <div className="absolute w-1 h-1 bg-[#EAB308] rounded-full bottom-0 right-0" />
+        </div>
+
+        {/* Minimal Cyber Corner Ticks / Metadata */}
+        <div className="pointer-events-none absolute top-3.5 left-10 text-[9px] font-mono tracking-widest text-[#0097A7]/60 z-30 uppercase select-none">
+          SYS // CAM_OPTICAL_01
+        </div>
+        <div className="pointer-events-none absolute top-3.5 right-10 text-[9px] font-mono tracking-widest text-[#EAB308]/60 z-30 uppercase select-none">
+          NODE: 0x1E3A8A
+        </div>
+
+        {/* 2. Continuous Vertical Scanning Line (Framer Motion) */}
+        {isActive && (
+          <motion.div
+            className="pointer-events-none absolute left-0 right-0 h-[2px] z-25"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent 0%, #0097A7 20%, #67E8F9 50%, #0097A7 80%, transparent 100%)',
+              boxShadow: '0 0 14px #0097A7, 0 0 28px rgba(0, 151, 167, 0.45)',
+            }}
+            initial={{ top: '0%' }}
+            animate={{ top: ['0%', '100%'] }}
+            transition={{
+              duration: 3.5,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          >
+            {/* Trailing soft laser gradient */}
+            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#0097A7]/12 to-transparent pointer-events-none" />
+          </motion.div>
+        )}
 
         {/* Video Element */}
         <video
@@ -83,41 +138,39 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
           autoPlay
           playsInline
           muted
-          className={`w-full h-full object-cover transition-opacity duration-200 ${
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
             isActive ? 'opacity-100' : 'opacity-10'
           }`}
         />
 
-        {/* Friendly Oval Outline Overlay with "Position your face here." */}
-        {isActive && (
-          <FaceRoiOverlay isGenuine={isGenuine} />
-        )}
+        {/* Glowing Teal Cyber HUD Reticle Overlay */}
+        {isActive && <FaceRoiOverlay isGenuine={isGenuine} />}
 
         {/* Inactive or Upload Mode Overlay */}
         {!isActive && inputSource !== 'UPLOAD_VIDEO' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-[#0E1015]/95 z-20">
-            <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mb-3">
-              <CameraOff className="w-5 h-5 text-gray-400" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-[#0B0E14]/95 backdrop-blur-sm z-20">
+            <div className="w-13 h-13 rounded-2xl bg-[#0097A7]/10 border border-[#0097A7]/30 flex items-center justify-center mb-3.5 shadow-[0_0_20px_rgba(0,151,167,0.2)]">
+              <CameraOff className="w-6 h-6 text-[#0097A7]" />
             </div>
-            <p className="text-sm font-medium text-gray-200">Camera Offline</p>
-            <p className="text-xs text-gray-500 mt-1 mb-4 text-center max-w-sm">
-              Please enable your webcam to begin face verification.
+            <p className="text-sm font-semibold text-white tracking-wide">Optical Sensor Offline</p>
+            <p className="text-xs text-gray-400 mt-1 mb-4 text-center max-w-sm">
+              Initialize your camera feed to begin automated biometric verification.
             </p>
             <button
               onClick={onStartCamera}
-              className="px-4 py-2 text-xs font-medium text-white bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.12] rounded-full transition-all cursor-pointer"
+              className="px-5 py-2 text-xs font-semibold text-white bg-[#0097A7] hover:bg-[#00ADC0] border border-[#0097A7] rounded-full transition-all cursor-pointer shadow-[0_0_16px_rgba(0,151,167,0.4)]"
             >
-              {isLoading ? 'Connecting Camera...' : 'Start Camera'}
+              {isLoading ? 'Connecting Sensor...' : 'Start Camera'}
             </button>
           </div>
         )}
 
         {/* Upload Mode UI */}
         {inputSource === 'UPLOAD_VIDEO' && (
-          <label className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-[#0E1015]/90 z-20 cursor-pointer hover:bg-[#0E1015]/80 transition-colors">
-            <UploadCloud className="w-8 h-8 text-violet-400 mb-2" />
-            <span className="text-sm font-medium text-gray-200">Drop KYC Video File Here</span>
-            <span className="text-xs text-gray-500 mt-1">Supports MP4, WebM</span>
+          <label className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-[#0B0E14]/90 backdrop-blur-sm z-20 cursor-pointer hover:bg-[#0B0E14]/80 transition-colors">
+            <UploadCloud className="w-9 h-9 text-[#0097A7] mb-2 drop-shadow-[0_0_12px_rgba(0,151,167,0.5)]" />
+            <span className="text-sm font-semibold text-white">Drop KYC Video File Here</span>
+            <span className="text-xs text-gray-400 mt-1">Accepts MP4, WebM formats</span>
             <input
               type="file"
               accept="video/*"
@@ -129,18 +182,23 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
 
         {/* Snapshot feedback pill */}
         {snapshotTaken && (
-          <div className="absolute top-3 right-3 bg-[#12141A]/90 text-emerald-400 border border-emerald-500/30 text-xs px-3.5 py-1 rounded-full z-30 font-medium shadow-md">
-            Photo captured
+          <div className="absolute top-4 right-12 bg-[#0E1420]/90 backdrop-blur-md text-[#0097A7] border border-[#0097A7]/40 text-xs px-3.5 py-1.5 rounded-full z-30 font-medium shadow-[0_0_14px_rgba(0,151,167,0.3)]">
+            Frame captured to forensic log
           </div>
         )}
       </div>
 
-      {/* Bottom Viewport Bar: Clean session timer, snapshot, and status in pill chips */}
-      <div className="w-full flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-[#12141A] border border-white/[0.08] rounded-xl shadow-sm">
+      {/* Bottom Viewport Bar: Frosted Glass Panel with Neubrutalist accents */}
+      <div className="w-full flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 frosted-glass-card rounded-[14px]">
         {/* Left: Clean Session Timer */}
         <div className="flex items-center gap-2 text-xs font-mono-tabular text-gray-400">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-          <span>SESSION: <strong className="text-gray-200 font-semibold">{minStr}:{secStr}</strong></span>
+          <span className="w-2 h-2 rounded-full bg-[#0097A7] shadow-[0_0_8px_#0097A7]" />
+          <span>
+            SESSION:{' '}
+            <strong className="text-gray-100 font-semibold">
+              {minStr}:{secStr}
+            </strong>
+          </span>
         </div>
 
         {/* Center: Camera Actions */}
@@ -164,18 +222,18 @@ export const BiometricViewport: React.FC<BiometricViewportProps> = ({
             <span>Take Photo</span>
           </button>
 
-          {/* Simple binary status indicator styled like Reference 4 & 5 */}
+          {/* Status Pill with subtle cyber glow */}
           <div
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
               isGenuine
-                ? 'bg-emerald-500/[0.12] text-emerald-400 border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]'
-                : 'bg-[#FF5733]/[0.12] text-[#FF6B4A] border-[#FF5733]/30 shadow-[0_0_12px_rgba(255,87,51,0.2)]'
+                ? 'bg-[#0097A7]/[0.12] text-[#0097A7] border-[#0097A7]/35 shadow-[0_0_12px_rgba(0,151,167,0.2)]'
+                : 'bg-[#EAB308]/[0.12] text-[#EAB308] border-[#EAB308]/35 shadow-[0_0_12px_rgba(234,179,8,0.2)]'
             }`}
           >
             {isGenuine ? (
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#0097A7]" />
             ) : (
-              <AlertTriangle className="w-3.5 h-3.5 text-[#FF6B4A]" />
+              <AlertTriangle className="w-3.5 h-3.5 text-[#EAB308]" />
             )}
             <span>{isGenuine ? 'Identity Verified' : 'Verification Failed'}</span>
           </div>

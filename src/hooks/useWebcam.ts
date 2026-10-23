@@ -85,37 +85,37 @@ export function useWebcam(): UseWebcamReturn {
       const cx = 320 + Math.sin(time * 0.8) * 16;
       const cy = 240 + Math.cos(time * 0.6) * 10;
 
-      // Outer head contour with subtle violet radiance
+      // Outer head contour with subtle teal / indigo radiance
       ctx.save();
       ctx.beginPath();
       ctx.ellipse(cx, cy, 95, 125, 0, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(26, 28, 38, 0.45)';
+      ctx.fillStyle = 'rgba(14, 25, 45, 0.55)';
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(168, 85, 247, 0.45)';
+      ctx.strokeStyle = 'rgba(0, 151, 167, 0.45)';
       ctx.stroke();
 
-      // Eyes (Violet & Coral Glow)
+      // Eyes (Teal Glow)
       const eyeBlink = Math.sin(time * 1.5) > 0.94 ? 1 : 12;
-      ctx.fillStyle = '#A855F7';
+      ctx.fillStyle = '#0097A7';
       ctx.beginPath();
       ctx.ellipse(cx - 36, cy - 25, 14, eyeBlink, 0, 0, Math.PI * 2);
       ctx.ellipse(cx + 36, cy - 25, 14, eyeBlink, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Nose bridge
+      // Nose bridge (Gold Accent)
       ctx.beginPath();
       ctx.moveTo(cx, cy - 10);
       ctx.lineTo(cx - 6, cy + 15);
       ctx.lineTo(cx + 6, cy + 15);
-      ctx.strokeStyle = 'rgba(255, 107, 74, 0.55)';
+      ctx.strokeStyle = 'rgba(234, 179, 8, 0.65)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Mouth
+      // Mouth (Teal & Indigo)
       ctx.beginPath();
       ctx.arc(cx, cy + 45, 24, 0.1 * Math.PI, 0.9 * Math.PI);
-      ctx.strokeStyle = 'rgba(168, 85, 247, 0.55)';
+      ctx.strokeStyle = 'rgba(0, 151, 167, 0.55)';
       ctx.lineWidth = 2;
       ctx.stroke();
       ctx.restore();
