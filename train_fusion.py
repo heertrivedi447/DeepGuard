@@ -69,8 +69,8 @@ def load_dataset(csv_path: Path = FEATURES_CSV_PATH) -> Tuple[np.ndarray, np.nda
         reader = csv.DictReader(f)
         for row in reader:
             vec = [
-                float(row["liveness_score"]),
                 float(row["ela_anomaly"]),
+                1.0 - float(row["liveness_score"]),
                 float(row["fft_anomaly"]),
                 float(row["neural_fake_prob"]),
             ]
@@ -202,7 +202,7 @@ def predict_authenticity(
             if _CACHED_MODEL is None:
                 _CACHED_MODEL = joblib.load(model_path)
             X = np.array(
-                [[liveness_score, ela_anomaly, fft_anomaly, neural_fake_prob]],
+                [[ela_anomaly, 1.0 - liveness_score, fft_anomaly, neural_fake_prob]],
                 dtype=np.float32,
             )
             prob_genuine = float(_CACHED_MODEL.predict_proba(X)[0, 1])
