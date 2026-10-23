@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+assets/*.dat
+assets/*.bin
+*.joblib
+venv/
+__pycache__/
