@@ -2,27 +2,35 @@
 
 @layer base {
   :root {
-    --canvas-bg: #0B0D11;
-    --surface-card: #12161F;
-    --surface-elevated: #181D28;
-    --border-hairline: rgba(255, 255, 255, 0.07);
-    --border-hover: rgba(255, 255, 255, 0.14);
-    
-    --text-primary: #F3F4F6;
-    --text-secondary: #9CA3AF;
-    --text-muted: #6B7280;
+    /* True Charcoal Black Canvas & Card Surfaces (No Navy/Blue Tint) */
+    --canvas-bg: #0A0B0E;
+    --surface-card: #12141A;
+    --surface-card-hover: #161822;
+    --surface-elevated: #1A1C25;
+    --surface-pill: rgba(255, 255, 255, 0.04);
+    --border-hairline: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.16);
 
+    /* Text Colors */
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+
+    /* Palette from Image 5: Electric Violet & Vibrant Coral/Orange */
+    --accent-violet: #9333EA;
+    --accent-violet-light: #A855F7;
+    --accent-violet-bg: rgba(147, 51, 234, 0.12);
+    --accent-violet-border: rgba(168, 85, 247, 0.35);
+
+    --accent-coral: #FF5733;
+    --accent-coral-light: #FF6B4A;
+    --accent-coral-bg: rgba(255, 87, 51, 0.12);
+    --accent-coral-border: rgba(255, 87, 51, 0.35);
+
+    /* Status Mint / Emerald */
     --status-emerald: #10B981;
-    --status-emerald-bg: rgba(16, 185, 129, 0.08);
-    --status-emerald-border: rgba(16, 185, 129, 0.25);
-
-    --status-amber: #F59E0B;
-    --status-amber-bg: rgba(245, 158, 11, 0.08);
-    --status-amber-border: rgba(245, 158, 11, 0.25);
-
-    --status-crimson: #EF4444;
-    --status-crimson-bg: rgba(239, 68, 68, 0.08);
-    --status-crimson-border: rgba(239, 68, 68, 0.25);
+    --status-emerald-bg: rgba(16, 185, 129, 0.10);
+    --status-emerald-border: rgba(16, 185, 129, 0.28);
   }
 
   body {
@@ -45,11 +53,37 @@
 
 /* Hairline border utilities */
 .border-hairline {
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .border-hairline-hover:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Soft ambient glow utilities inspired by reference images */
+.glow-violet {
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.22);
+}
+
+.glow-coral {
+  box-shadow: 0 0 24px rgba(255, 87, 51, 0.22);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.20);
+}
+
+/* Rounded pill chip from Reference Image 4 */
+.pill-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+}
+
+.pill-chip:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 /* Minimalist scrollbars */

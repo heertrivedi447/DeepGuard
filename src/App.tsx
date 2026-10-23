@@ -115,7 +115,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0D11] text-[#F3F4F6] flex flex-col font-sans antialiased selection:bg-emerald-500/20 selection:text-emerald-300">
+    <div className="min-h-screen bg-[#0A0B0E] text-[#F8FAFC] flex flex-col font-sans antialiased selection:bg-purple-600/30 selection:text-white">
       {/* A. Minimal Top Header Bar */}
       <HeaderBar
         inputSource={inputSource}

@@ -10,17 +10,27 @@ export const AuthenticityVerdictCard: React.FC<AuthenticityVerdictCardProps> = (
   const isGenuine = fusion?.is_genuine ?? true;
 
   return (
-    <div className="w-full bg-[#12161F] border-hairline rounded-[12px] p-5 shadow-sm">
-      {/* Header Label */}
-      <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+    <div className="relative w-full bg-[#12141A] border border-white/[0.08] rounded-[16px] p-5 shadow-lg overflow-hidden">
+      {/* Soft Ambient Radial Glow Dome (Inspired by Reference Image 4) */}
+      <div
+        className="pointer-events-none absolute -bottom-10 left-1/2 -translate-x-1/2 w-72 h-36 rounded-full blur-2xl opacity-40 transition-colors duration-500"
+        style={{
+          background: isGenuine
+            ? 'radial-gradient(circle, rgba(147, 51, 234, 0.5) 0%, rgba(16, 185, 129, 0.3) 50%, transparent 80%)'
+            : 'radial-gradient(circle, rgba(255, 87, 51, 0.6) 0%, rgba(249, 115, 22, 0.3) 50%, transparent 80%)',
+        }}
+      />
+
+      {/* Header Label and Status Pill */}
+      <div className="relative z-10 flex items-center justify-between pb-3 border-b border-white/[0.06]">
         <span className="text-xs uppercase font-medium tracking-wider text-gray-400">
           Verification Result
         </span>
         <span
-          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
+          className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border transition-all ${
             isGenuine
               ? 'bg-emerald-500/[0.10] text-emerald-400 border-emerald-500/20'
-              : 'bg-red-500/[0.10] text-red-400 border-red-500/20'
+              : 'bg-[#FF5733]/[0.10] text-[#FF6B4A] border-[#FF5733]/30'
           }`}
         >
           {isGenuine ? 'Passed' : 'Attention Required'}
@@ -28,12 +38,13 @@ export const AuthenticityVerdictCard: React.FC<AuthenticityVerdictCardProps> = (
       </div>
 
       {/* Clean Binary Status Indicator */}
-      <div className="py-4 flex items-center gap-3.5">
+      <div className="relative z-10 py-4 flex items-center gap-4">
+        {/* Glowing Status Icon Badge */}
         <div
-          className={`w-12 h-12 rounded-xl flex items-center justify-center border flex-shrink-0 ${
+          className={`w-12 h-12 rounded-xl flex items-center justify-center border flex-shrink-0 transition-all ${
             isGenuine
-              ? 'bg-emerald-500/[0.10] border-emerald-500/30 text-emerald-400'
-              : 'bg-red-500/[0.10] border-red-500/30 text-red-400'
+              ? 'bg-emerald-500/[0.12] border-emerald-500/30 text-emerald-400 shadow-[0_0_16px_rgba(16,185,129,0.25)]'
+              : 'bg-[#FF5733]/[0.12] border-[#FF5733]/30 text-[#FF6B4A] shadow-[0_0_16px_rgba(255,87,51,0.25)]'
           }`}
         >
           {isGenuine ? (
@@ -46,7 +57,7 @@ export const AuthenticityVerdictCard: React.FC<AuthenticityVerdictCardProps> = (
         <div>
           <h3
             className={`text-xl font-bold tracking-tight ${
-              isGenuine ? 'text-emerald-400' : 'text-red-400'
+              isGenuine ? 'text-white' : 'text-[#FF6B4A]'
             }`}
           >
             {isGenuine ? 'Identity Verified' : 'Verification Failed'}

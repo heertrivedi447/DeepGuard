@@ -44,7 +44,7 @@ export function useWebcam(): UseWebcamReturn {
     }
   }, [selectedDeviceId]);
 
-  // Synthetic simulated feed fallback
+  // Synthetic simulated feed fallback (Charcoal Black Aesthetic)
   const startSimulatedFeed = useCallback(() => {
     if (!simCanvasRef.current) {
       simCanvasRef.current = document.createElement('canvas');
@@ -58,15 +58,15 @@ export function useWebcam(): UseWebcamReturn {
     const renderSynthetic = () => {
       const time = performance.now() * 0.002;
 
-      // Dark cyber gradient background
+      // Dark Charcoal Gradient Background (No Blue Tint)
       const grad = ctx.createLinearGradient(0, 0, 640, 480);
-      grad.addColorStop(0, '#070C18');
-      grad.addColorStop(1, '#0F1A30');
+      grad.addColorStop(0, '#090A0D');
+      grad.addColorStop(1, '#111318');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 640, 480);
 
-      // Fine cyber grid
-      ctx.strokeStyle = 'rgba(0, 151, 167, 0.15)';
+      // Fine Charcoal Grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
       ctx.lineWidth = 1;
       for (let x = 0; x < 640; x += 40) {
         ctx.beginPath();
@@ -85,19 +85,19 @@ export function useWebcam(): UseWebcamReturn {
       const cx = 320 + Math.sin(time * 0.8) * 16;
       const cy = 240 + Math.cos(time * 0.6) * 10;
 
-      // Outer head contour
+      // Outer head contour with subtle violet radiance
       ctx.save();
       ctx.beginPath();
       ctx.ellipse(cx, cy, 95, 125, 0, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(30, 58, 138, 0.35)';
+      ctx.fillStyle = 'rgba(26, 28, 38, 0.45)';
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.6)';
+      ctx.strokeStyle = 'rgba(168, 85, 247, 0.45)';
       ctx.stroke();
 
-      // Eyes
+      // Eyes (Violet & Coral Glow)
       const eyeBlink = Math.sin(time * 1.5) > 0.94 ? 1 : 12;
-      ctx.fillStyle = '#00E5FF';
+      ctx.fillStyle = '#A855F7';
       ctx.beginPath();
       ctx.ellipse(cx - 36, cy - 25, 14, eyeBlink, 0, 0, Math.PI * 2);
       ctx.ellipse(cx + 36, cy - 25, 14, eyeBlink, 0, 0, Math.PI * 2);
@@ -108,14 +108,14 @@ export function useWebcam(): UseWebcamReturn {
       ctx.moveTo(cx, cy - 10);
       ctx.lineTo(cx - 6, cy + 15);
       ctx.lineTo(cx + 6, cy + 15);
-      ctx.strokeStyle = 'rgba(234, 179, 8, 0.6)';
+      ctx.strokeStyle = 'rgba(255, 107, 74, 0.55)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
       // Mouth
       ctx.beginPath();
       ctx.arc(cx, cy + 45, 24, 0.1 * Math.PI, 0.9 * Math.PI);
-      ctx.strokeStyle = 'rgba(0, 151, 167, 0.8)';
+      ctx.strokeStyle = 'rgba(168, 85, 247, 0.55)';
       ctx.lineWidth = 2;
       ctx.stroke();
       ctx.restore();
@@ -125,7 +125,6 @@ export function useWebcam(): UseWebcamReturn {
 
     renderSynthetic();
 
-    // Stream capture from canvas
     const simStream = canvas.captureStream(25);
     setStream(simStream);
     if (videoRef.current) {
@@ -145,7 +144,6 @@ export function useWebcam(): UseWebcamReturn {
     setIsSimulated(false);
   }, []);
 
-  // Stop camera helper
   const stopCamera = useCallback(() => {
     stopSimulatedFeed();
     if (stream) {
@@ -159,7 +157,6 @@ export function useWebcam(): UseWebcamReturn {
     setIsLoading(false);
   }, [stream, stopSimulatedFeed]);
 
-  // Start real webcam stream
   const startCamera = useCallback(async () => {
     stopCamera();
     setIsLoading(true);
@@ -216,7 +213,6 @@ export function useWebcam(): UseWebcamReturn {
     setSelectedDeviceId(deviceId);
   }, []);
 
-  // Auto-start camera on mount
   useEffect(() => {
     startCamera();
     return () => {
