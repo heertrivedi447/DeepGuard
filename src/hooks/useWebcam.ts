@@ -44,7 +44,7 @@ export function useWebcam(): UseWebcamReturn {
     }
   }, [selectedDeviceId]);
 
-  // Synthetic simulated feed fallback
+  // Synthetic simulated feed fallback (Charcoal Black Aesthetic)
   const startSimulatedFeed = useCallback(() => {
     if (!simCanvasRef.current) {
       simCanvasRef.current = document.createElement('canvas');
@@ -55,21 +55,18 @@ export function useWebcam(): UseWebcamReturn {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let frameCount = 0;
-
     const renderSynthetic = () => {
-      frameCount++;
       const time = performance.now() * 0.002;
 
-      // Dark cyber gradient background
+      // Dark Charcoal Gradient Background (No Blue Tint)
       const grad = ctx.createLinearGradient(0, 0, 640, 480);
-      grad.addColorStop(0, '#070C18');
-      grad.addColorStop(1, '#0F1A30');
+      grad.addColorStop(0, '#090A0D');
+      grad.addColorStop(1, '#111318');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 640, 480);
 
-      // Fine cyber grid
-      ctx.strokeStyle = 'rgba(0, 151, 167, 0.15)';
+      // Fine Charcoal Grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
       ctx.lineWidth = 1;
       for (let x = 0; x < 640; x += 40) {
         ctx.beginPath();
@@ -85,56 +82,49 @@ export function useWebcam(): UseWebcamReturn {
       }
 
       // Simulated Subject Face Silhouette
-      const cx = 320 + Math.sin(time * 0.8) * 20;
-      const cy = 240 + Math.cos(time * 0.6) * 12;
+      const cx = 320 + Math.sin(time * 0.8) * 16;
+      const cy = 240 + Math.cos(time * 0.6) * 10;
 
-      // Outer head contour
+      // Outer head contour with subtle teal / indigo radiance
       ctx.save();
       ctx.beginPath();
       ctx.ellipse(cx, cy, 95, 125, 0, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(30, 58, 138, 0.35)';
+      ctx.fillStyle = 'rgba(14, 25, 45, 0.55)';
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.6)';
+      ctx.strokeStyle = 'rgba(0, 151, 167, 0.45)';
       ctx.stroke();
 
-      // Eyes
+      // Eyes (Teal Glow)
       const eyeBlink = Math.sin(time * 1.5) > 0.94 ? 1 : 12;
-      ctx.fillStyle = '#00E5FF';
+      ctx.fillStyle = '#0097A7';
       ctx.beginPath();
       ctx.ellipse(cx - 36, cy - 25, 14, eyeBlink, 0, 0, Math.PI * 2);
       ctx.ellipse(cx + 36, cy - 25, 14, eyeBlink, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Nose bridge
+      // Nose bridge (Gold Accent)
       ctx.beginPath();
       ctx.moveTo(cx, cy - 10);
       ctx.lineTo(cx - 6, cy + 15);
       ctx.lineTo(cx + 6, cy + 15);
-      ctx.strokeStyle = 'rgba(234, 179, 8, 0.6)';
+      ctx.strokeStyle = 'rgba(234, 179, 8, 0.65)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Mouth
+      // Mouth (Teal & Indigo)
       ctx.beginPath();
       ctx.arc(cx, cy + 45, 24, 0.1 * Math.PI, 0.9 * Math.PI);
-      ctx.strokeStyle = 'rgba(0, 151, 167, 0.8)';
+      ctx.strokeStyle = 'rgba(0, 151, 167, 0.55)';
       ctx.lineWidth = 2;
       ctx.stroke();
       ctx.restore();
-
-      // Technical HUD overlays on synthetic feed
-      ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
-      ctx.font = '12px monospace';
-      ctx.fillText(`DEEPGUARD SYNTHETIC TEST FEED [SIM_ID: #${(frameCount % 9999).toString().padStart(4, '0')}]`, 20, 30);
-      ctx.fillText(`SENSOR: VIRTUAL 640x480 @ 25FPS`, 20, 48);
 
       simAnimationRef.current = requestAnimationFrame(renderSynthetic);
     };
 
     renderSynthetic();
 
-    // Stream capture from canvas
     const simStream = canvas.captureStream(25);
     setStream(simStream);
     if (videoRef.current) {
@@ -154,7 +144,6 @@ export function useWebcam(): UseWebcamReturn {
     setIsSimulated(false);
   }, []);
 
-  // Stop camera helper
   const stopCamera = useCallback(() => {
     stopSimulatedFeed();
     if (stream) {
@@ -168,7 +157,6 @@ export function useWebcam(): UseWebcamReturn {
     setIsLoading(false);
   }, [stream, stopSimulatedFeed]);
 
-  // Start real webcam stream
   const startCamera = useCallback(async () => {
     stopCamera();
     setIsLoading(true);
@@ -206,7 +194,6 @@ export function useWebcam(): UseWebcamReturn {
       const errorMsg = err instanceof Error ? err.message : 'Failed to access webcam';
       console.warn('Webcam acquisition warning:', errorMsg);
       setError(errorMsg);
-      // Automatically fallback to simulated feed if camera permission or hardware is unavailable
       startSimulatedFeed();
     } finally {
       setIsLoading(false);
@@ -226,13 +213,12 @@ export function useWebcam(): UseWebcamReturn {
     setSelectedDeviceId(deviceId);
   }, []);
 
-  // Auto-start camera on mount
   useEffect(() => {
     startCamera();
     return () => {
       stopCamera();
     };
-  }, []); // Run on mount
+  }, []);
 
   return {
     videoRef,

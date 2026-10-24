@@ -1,5 +1,6 @@
 import React from 'react';
-import { EarSparkline } from './EarSparkline';
+import { motion } from 'framer-motion';
+import { Eye, ShieldCheck, AlertCircle } from 'lucide-react';
 import type {
   PlaneA_ELA,
   PlaneB_EAR,
@@ -10,236 +11,166 @@ import type {
 interface PlaneAnalysisGridProps {
   planeA?: PlaneA_ELA;
   planeB?: PlaneB_EAR;
-  planeC?: PlaneC_FFT;
+  planeC?: PlaneC_FFT; // Calculations run silently in backend, UI hidden
   neural?: AuxiliaryNeural;
 }
 
 export const PlaneAnalysisGrid: React.FC<PlaneAnalysisGridProps> = ({
   planeA,
   planeB,
-  planeC,
-  neural,
 }) => {
-  // Plane B: EAR
-  const earRaw = planeB?.ear_raw ?? 0.292;
+  // Plane B: Liveness Check (EAR)
   const isBlinking = planeB?.is_blink ?? false;
-  const earHistory = planeB?.ear_history ?? Array(30).fill(0.29);
-  const livenessScore = planeB?.liveness_score ?? 0.96;
-  const blinkCount = planeB?.blink_count ?? 6;
+  const blinkCount = planeB?.blink_count ?? 0;
+  const hasBlinked = blinkCount > 0 || isBlinking;
 
-  // Plane A: ELA
+  // Plane A: Image Integrity Scan (ELA)
   const elaAnomaly = planeA?.ela_anomaly ?? 0.12;
-  const q90Residual = planeA?.q90_residual ?? 0.038;
   const macroblockOk = planeA?.macroblock_consistency ?? true;
-
-  // Plane C: FFT
-  const fftAnomaly = planeC?.fft_anomaly ?? 0.08;
-  const highPassEnergy = planeC?.high_pass_energy ?? 0.18;
-  const checkerboardDetected = planeC?.checkerboard_detected ?? false;
-
-  // Auxiliary Neural
-  const neuralFakeProb = neural?.neural_fake_prob ?? 0.04;
-  const isCached = neural?.cached ?? true;
+  const isIntegrityPassed = elaAnomaly <= 0.5 && macroblockOk;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-      {/* 1. Plane B: Physiological Liveness (EAR) */}
-      <div className="bg-[#12161F] border-hairline rounded-[12px] p-4 flex flex-col justify-between shadow-sm">
-        <div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-gray-400">
-              Plane B — Biological (EAR)
+      {/* 1. Plane B Panel: "Liveness Check" (Staggered fade-up & scale-in) */}
+      <motion.div
+        initial={{ opacity: 0, y: 14, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.45, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        className="relative frosted-glass-card rounded-[18px] p-4 flex flex-col justify-between shadow-lg overflow-hidden"
+      >
+        {/* Faint Background Micro-Text & Minimal Cyber Node */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden select-none z-0">
+          <div className="absolute top-2 right-3 text-[8px] font-mono tracking-widest text-[#0097A7]/25 uppercase">
+            SYNC 34% // EAR_B
+          </div>
+          <div className="absolute bottom-2 left-3 text-[8px] font-mono tracking-widest text-[#1E3A8A]/35 uppercase">
+            OCULAR_DELTA: 0.04
+          </div>
+          <div className="absolute top-1/2 right-3 flex items-center gap-1 opacity-20">
+            <span className="w-1 h-1 rounded-full bg-[#0097A7] animate-ping" />
+            <span className="text-[7px] font-mono text-[#0097A7]">0x4B</span>
+          </div>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-[#0097A7]/15 border border-[#0097A7]/30 flex items-center justify-center">
+              <Eye className="w-3.5 h-3.5 text-[#0097A7]" />
+            </div>
+            <span className="text-xs font-semibold text-gray-200">
+              Liveness Check
             </span>
-            <div className="flex items-center gap-1.5">
-              {isBlinking && (
-                <span className="text-[10px] font-mono-tabular font-medium text-amber-400 bg-amber-400/10 px-1.5 py-0.2 rounded border border-amber-400/20">
-                  BLINK
-                </span>
-              )}
-              <span className="text-[10px] font-mono-tabular text-gray-400">
-                {blinkCount} blinks
+          </div>
+
+          <span className="text-[10px] font-medium font-mono text-[#0097A7] bg-[#0097A7]/10 px-2 py-0.5 rounded-full border border-[#0097A7]/25 shadow-[0_0_8px_rgba(0,151,167,0.2)]">
+            ACTIVE NODE
+          </span>
+        </div>
+
+        {/* Status in Frosted Pill */}
+        <div className="relative z-10 my-4 flex items-center justify-center p-3 bg-[#0B0F17]/80 border border-white/[0.07] rounded-xl shadow-inner">
+          <div className="flex items-center gap-2 text-sm font-semibold text-gray-100">
+            <span>Blink Detected:</span>
+            <span className="text-base">{hasBlinked ? '✅' : '⏳'}</span>
+          </div>
+        </div>
+
+        <p className="relative z-10 text-[11px] text-gray-400">
+          {hasBlinked
+            ? 'Natural biological liveness confirmed.'
+            : 'Please blink naturally facing the scanner.'}
+        </p>
+      </motion.div>
+
+      {/* 2. Plane A Panel: "Image Integrity Scan" (Breathing glow on status badge) */}
+      <motion.div
+        initial={{ opacity: 0, y: 14, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.45, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="relative frosted-glass-card rounded-[18px] p-4 flex flex-col justify-between shadow-lg overflow-hidden"
+      >
+        {/* Faint Background Micro-Text & Minimal Cyber Node */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden select-none z-0">
+          <div className="absolute top-2 right-3 text-[8px] font-mono tracking-widest text-[#0097A7]/25 uppercase">
+            SYNC 78% // ELA_A
+          </div>
+          <div className="absolute bottom-2 left-3 text-[8px] font-mono tracking-widest text-[#1E3A8A]/35 uppercase">
+            Q90_RESIDUAL: OPTIMAL
+          </div>
+          <div className="absolute top-1/2 right-3 flex items-center gap-1 opacity-20">
+            <span className="w-1 h-1 rounded-full bg-[#1E3A8A] animate-ping" />
+            <span className="text-[7px] font-mono text-[#0097A7]">0x1A</span>
+          </div>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-[#1E3A8A]/30 border border-[#0097A7]/30 flex items-center justify-center">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0097A7]" />
+            </div>
+            <span className="text-xs font-semibold text-gray-200">
+              Image Integrity Scan
+            </span>
+          </div>
+
+          {/* Soft Breathing Glow matching Teal/Indigo palette on Image Integrity Scan status badge */}
+          <motion.span
+            animate={{
+              boxShadow: isIntegrityPassed
+                ? [
+                    '0 0 6px rgba(0, 151, 167, 0.3), 0 0 12px rgba(30, 58, 138, 0.2)',
+                    '0 0 18px rgba(0, 151, 167, 0.75), 0 0 28px rgba(30, 58, 138, 0.45)',
+                    '0 0 6px rgba(0, 151, 167, 0.3), 0 0 12px rgba(30, 58, 138, 0.2)',
+                  ]
+                : [
+                    '0 0 6px rgba(234, 179, 8, 0.3), 0 0 12px rgba(239, 68, 68, 0.2)',
+                    '0 0 18px rgba(234, 179, 8, 0.75), 0 0 28px rgba(239, 68, 68, 0.45)',
+                    '0 0 6px rgba(234, 179, 8, 0.3), 0 0 12px rgba(239, 68, 68, 0.2)',
+                  ],
+              borderColor: isIntegrityPassed
+                ? ['rgba(0, 151, 167, 0.4)', 'rgba(0, 151, 167, 0.85)', 'rgba(0, 151, 167, 0.4)']
+                : ['rgba(234, 179, 8, 0.4)', 'rgba(234, 179, 8, 0.85)', 'rgba(234, 179, 8, 0.4)'],
+            }}
+            transition={{
+              duration: 2.8,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            className={`text-[10px] font-semibold font-mono px-2.5 py-0.5 rounded-full border transition-all ${
+              isIntegrityPassed
+                ? 'text-[#0097A7] bg-[#0097A7]/10 border-[#0097A7]/30'
+                : 'text-[#EAB308] bg-[#EAB308]/10 border-[#EAB308]/30'
+            }`}
+          >
+            {isIntegrityPassed ? 'PASS' : 'FAIL'}
+          </motion.span>
+        </div>
+
+        {/* Pass/Fail Pill */}
+        <div className="relative z-10 my-4 flex items-center justify-center p-3 bg-[#0B0F17]/80 border border-white/[0.07] rounded-xl shadow-inner">
+          <div className="flex items-center gap-2">
+            {isIntegrityPassed ? (
+              <span className="text-sm font-semibold text-[#0097A7] flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#0097A7]" />
+                Image Integrity: Pass
               </span>
-            </div>
-          </div>
-
-          <div className="mt-2 flex items-baseline justify-between">
-            <div className="flex items-baseline gap-1 font-mono-tabular">
-              <span
-                className={`text-xl font-semibold ${
-                  earRaw < 0.22 ? 'text-amber-400' : 'text-gray-100'
-                }`}
-              >
-                {earRaw.toFixed(3)}
+            ) : (
+              <span className="text-sm font-semibold text-[#EAB308] flex items-center gap-1.5">
+                <AlertCircle className="w-4 h-4 text-[#EAB308]" />
+                Image Integrity: Fail
               </span>
-              <span className="text-xs text-gray-400">EAR</span>
-            </div>
-
-            <div className="text-right text-[11px] font-mono-tabular text-gray-400">
-              Liveness: <strong className="text-emerald-400 font-medium">{(livenessScore * 100).toFixed(0)}%</strong>
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Minimalist 30-frame rolling SVG sparkline with 0.22 threshold line */}
-        <div className="mt-2 pt-1 border-t border-white/[0.04]">
-          <EarSparkline
-            history={earHistory}
-            threshold={0.22}
-            currentVal={earRaw}
-            isBlinking={isBlinking}
-          />
-        </div>
-      </div>
+        <p className="relative z-10 text-[11px] text-gray-400">
+          {isIntegrityPassed
+            ? 'Spatial and boundary compression verified clean.'
+            : 'Pixel splice detected. Ensure balanced lighting.'}
+        </p>
+      </motion.div>
 
-      {/* 2. Plane A: Spatial Integrity (ELA) */}
-      <div className="bg-[#12161F] border-hairline rounded-[12px] p-4 flex flex-col justify-between shadow-sm">
-        <div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-gray-400">
-              Plane A — Spatial Integrity (ELA)
-            </span>
-            <span
-              className={`text-[10px] font-mono-tabular px-1.5 py-0.2 rounded border ${
-                macroblockOk
-                  ? 'text-gray-400 bg-white/[0.04] border-white/[0.06]'
-                  : 'text-red-400 bg-red-400/10 border-red-400/20'
-              }`}
-            >
-              {macroblockOk ? '8×8 Macroblocks OK' : 'Seam Divergence'}
-            </span>
-          </div>
-
-          <div className="mt-2 flex items-baseline justify-between font-mono-tabular">
-            <div className="flex items-baseline gap-1">
-              <span
-                className={`text-xl font-semibold ${
-                  elaAnomaly > 0.5 ? 'text-red-400' : 'text-gray-100'
-                }`}
-              >
-                {elaAnomaly.toFixed(3)}
-              </span>
-              <span className="text-xs text-gray-400">Δ ELA</span>
-            </div>
-            <span className="text-[11px] text-gray-400">
-              Residual: {q90Residual.toFixed(3)}
-            </span>
-          </div>
-        </div>
-
-        {/* Thin progress meter */}
-        <div className="mt-4 space-y-1.5">
-          <div className="relative w-full h-1 bg-white/[0.06] rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-200 ${
-                elaAnomaly > 0.5 ? 'bg-red-400' : 'bg-cyan-400'
-              }`}
-              style={{ width: `${Math.min(100, Math.max(0, elaAnomaly * 100))}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-gray-400 font-mono-tabular">
-            <span>JPEG Q=90 Recompression</span>
-            <span>Threshold: 0.50</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Plane C: Spectral Purity (2D FFT) */}
-      <div className="bg-[#12161F] border-hairline rounded-[12px] p-4 flex flex-col justify-between shadow-sm">
-        <div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-gray-400">
-              Plane C — Spectral Purity (2D FFT)
-            </span>
-            <span
-              className={`text-[10px] font-mono-tabular px-1.5 py-0.2 rounded border ${
-                checkerboardDetected
-                  ? 'text-red-400 bg-red-400/10 border-red-400/20'
-                  : 'text-gray-400 bg-white/[0.04] border-white/[0.06]'
-              }`}
-            >
-              {checkerboardDetected ? 'Checkerboard Spikes' : 'Clean Spectrum'}
-            </span>
-          </div>
-
-          <div className="mt-2 flex items-baseline justify-between font-mono-tabular">
-            <div className="flex items-baseline gap-1">
-              <span
-                className={`text-xl font-semibold ${
-                  fftAnomaly > 0.5 ? 'text-red-400' : 'text-gray-100'
-                }`}
-              >
-                {fftAnomaly.toFixed(3)}
-              </span>
-              <span className="text-xs text-gray-400">FFT Anomaly</span>
-            </div>
-            <span className="text-[11px] text-gray-400">
-              High-Pass: {(highPassEnergy * 100).toFixed(0)}%
-            </span>
-          </div>
-        </div>
-
-        {/* Thin progress meter */}
-        <div className="mt-4 space-y-1.5">
-          <div className="relative w-full h-1 bg-white/[0.06] rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-200 ${
-                fftAnomaly > 0.5 ? 'bg-red-400' : 'bg-cyan-400'
-              }`}
-              style={{ width: `${Math.min(100, Math.max(0, fftAnomaly * 100))}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-gray-400 font-mono-tabular">
-            <span>High-Pass Circular DFT Energy</span>
-            <span>GAN Spikes</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Auxiliary Layer: Neural ViT / SigLIP */}
-      <div className="bg-[#12161F] border-hairline rounded-[12px] p-4 flex flex-col justify-between shadow-sm">
-        <div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-gray-400">
-              Auxiliary — Neural ViT/SigLIP
-            </span>
-            <span className="text-[10px] font-mono-tabular text-cyan-300 bg-cyan-950/40 px-1.5 py-0.2 rounded border border-cyan-500/20">
-              5f cached
-            </span>
-          </div>
-
-          <div className="mt-2 flex items-baseline justify-between font-mono-tabular">
-            <div className="flex items-baseline gap-1">
-              <span
-                className={`text-xl font-semibold ${
-                  neuralFakeProb > 0.5 ? 'text-red-400' : 'text-gray-100'
-                }`}
-              >
-                {neuralFakeProb.toFixed(3)}
-              </span>
-              <span className="text-xs text-gray-400">P(Fake)</span>
-            </div>
-            <span className="text-[11px] text-gray-400">
-              {isCached ? 'Scheduler: Cached' : 'Inference: Active'}
-            </span>
-          </div>
-        </div>
-
-        {/* Thin progress meter */}
-        <div className="mt-4 space-y-1.5">
-          <div className="relative w-full h-1 bg-white/[0.06] rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-200 ${
-                neuralFakeProb > 0.5 ? 'bg-red-400' : 'bg-indigo-400'
-              }`}
-              style={{ width: `${Math.min(100, Math.max(0, neuralFakeProb * 100))}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-gray-400 font-mono-tabular">
-            <span>Semantic Embedding Drift</span>
-            <span>ViT-L/14</span>
-          </div>
-        </div>
-      </div>
+      {/* Plane C Panel (Spectral Purity) remains completely hidden from visual layout */}
     </div>
   );
 };

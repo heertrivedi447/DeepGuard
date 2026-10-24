@@ -2,27 +2,30 @@
 
 @layer base {
   :root {
-    --canvas-bg: #0B0D11;
-    --surface-card: #12161F;
-    --surface-elevated: #181D28;
-    --border-hairline: rgba(255, 255, 255, 0.07);
-    --border-hover: rgba(255, 255, 255, 0.14);
-    
-    --text-primary: #F3F4F6;
-    --text-secondary: #9CA3AF;
-    --text-muted: #6B7280;
+    /* Dark Background & Neubrutalist Glass Surfaces */
+    --canvas-bg: #0A0B0E;
+    --surface-glass: rgba(14, 19, 29, 0.72);
+    --surface-glass-hover: rgba(20, 27, 42, 0.82);
+    --surface-elevated: rgba(22, 30, 48, 0.85);
+    --surface-pill: rgba(255, 255, 255, 0.05);
 
-    --status-emerald: #10B981;
-    --status-emerald-bg: rgba(16, 185, 129, 0.08);
-    --status-emerald-border: rgba(16, 185, 129, 0.25);
+    /* Neubrutalist Outlines & Hairlines */
+    --border-hairline: rgba(255, 255, 255, 0.08);
+    --border-teal: rgba(0, 151, 167, 0.35);
+    --border-indigo: rgba(30, 58, 138, 0.45);
+    --border-gold: rgba(234, 179, 8, 0.35);
 
-    --status-amber: #F59E0B;
-    --status-amber-bg: rgba(245, 158, 11, 0.08);
-    --status-amber-border: rgba(245, 158, 11, 0.25);
+    /* Text Colors */
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
 
-    --status-crimson: #EF4444;
-    --status-crimson-bg: rgba(239, 68, 68, 0.08);
-    --status-crimson-border: rgba(239, 68, 68, 0.25);
+    /* Core Neubrutalist Cyber Palette */
+    --color-indigo: #1E3A8A;
+    --color-teal: #0097A7;
+    --color-teal-glow: #00D2E5;
+    --color-gold: #EAB308;
+    --color-emerald: #10B981;
   }
 
   body {
@@ -43,16 +46,55 @@
   }
 }
 
-/* Hairline border utilities */
-.border-hairline {
-  border: 1px solid rgba(255, 255, 255, 0.07);
+/* Frosted Glass Neubrutalist Panels */
+.frosted-glass-card {
+  background: rgba(14, 19, 29, 0.70);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-.border-hairline-hover:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+.frosted-glass-card:hover {
+  border-color: rgba(0, 151, 167, 0.25);
 }
 
-/* Minimalist scrollbars */
+/* Active Cyber Glowing Network Nodes */
+@keyframes breathing-teal-indigo {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(0, 151, 167, 0.35), 0 0 16px rgba(30, 58, 138, 0.2);
+    border-color: rgba(0, 151, 167, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(0, 151, 167, 0.75), 0 0 36px rgba(30, 58, 138, 0.45);
+    border-color: rgba(0, 151, 167, 0.85);
+  }
+}
+
+.breathing-node-glow {
+  animation: breathing-teal-indigo 2.8s ease-in-out infinite;
+}
+
+/* Rounded Frosted Pill Chip */
+.pill-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+}
+
+.pill-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 151, 167, 0.3);
+}
+
+/* Cyber Matrix Background Grid */
+.cyber-grid-pattern {
+  background-image: radial-gradient(rgba(0, 151, 167, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Minimalist cyber scrollbars */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -61,9 +103,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 151, 167, 0.25);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(0, 151, 167, 0.5);
 }
