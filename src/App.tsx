@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useMotionValue } from 'framer-motion';
 import { useWebcam } from './hooks/useWebcam';
 import { HeaderBar } from './components/enterprise/HeaderBar';
 import { BiometricViewport } from './components/enterprise/BiometricViewport';
@@ -7,7 +6,6 @@ import { AuthenticityVerdictCard } from './components/enterprise/AuthenticityVer
 import { PlaneAnalysisGrid } from './components/enterprise/PlaneAnalysisGrid';
 import { SessionAuditLog } from './components/enterprise/SessionAuditLog';
 import { AttackSimulatorPresetBar } from './components/enterprise/AttackSimulatorPresetBar';
-import { InteractiveCyberBackground } from './components/enterprise/InteractiveCyberBackground';
 import { deepGuardEngine } from './services/mockWebSocketService';
 import type {
   AttackSimulationPreset,
@@ -26,26 +24,6 @@ export const App: React.FC = () => {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Global cursor-tracking motion coordinates
-  const mouseX = useMotionValue(
-    typeof window !== 'undefined' ? window.innerWidth / 2 : 500
-  );
-  const mouseY = useMotionValue(
-    typeof window !== 'undefined' ? window.innerHeight / 3 : 300
-  );
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    mouseX.set(e.clientX);
-    mouseY.set(e.clientY);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches && e.touches[0]) {
-      mouseX.set(e.touches[0].clientX);
-      mouseY.set(e.touches[0].clientY);
-    }
-  };
-
   // Optical webcam stream acquisition hook
   const {
     videoRef,
@@ -55,7 +33,7 @@ export const App: React.FC = () => {
     stopCamera,
   } = useWebcam();
 
-  // Initialize DeepGuard Telemetry Engine
+  // Initialize DeepGuard WebSocket Telemetry Engine
   useEffect(() => {
     deepGuardEngine.start();
 
@@ -137,35 +115,38 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div
-      onMouseMove={handleMouseMove}
-      onTouchMove={handleTouchMove}
-      className="relative min-h-screen bg-[#0A0B0E] text-[#F8FAFC] flex flex-col font-sans antialiased selection:bg-[#0097A7]/30 selection:text-white"
-    >
-      {/* Interactive Touch & Cursor Tracking Reactive Background */}
-      <InteractiveCyberBackground mouseX={mouseX} mouseY={mouseY} />
+    <div className="relative min-h-screen bg-[#08090C] text-[#F8FAFC] flex flex-col font-sans antialiased selection:bg-[#38BDF8]/30 selection:text-white">
+      {/* Subtle Ambient Sub-Surface Cobalt & Obsidian Backdrop */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(circle at 18% 22%, rgba(37, 99, 235, 0.08) 0%, transparent 45%), radial-gradient(circle at 82% 70%, rgba(255, 107, 0, 0.05) 0%, transparent 45%)',
+        }}
+      />
 
       {/* Foreground Content Stack */}
-      <div className="relative z-10 flex flex-col min-h-screen">
-        {/* A. Top Header Bar */}
+      <div className="relative z-10 flex flex-col min-h-screen pb-10">
+        {/* Signature A + Signature B: Editorial Serif Hero Banner & Stark Optical-Lens Manifesto Strip */}
         <HeaderBar
           inputSource={inputSource}
           onSelectInputSource={handleSelectInputSource}
           healthStats={healthStats}
+          telemetry={telemetry}
         />
 
-        {/* Main Single-View Workspace Container */}
-        <main className="flex-1 max-w-[1440px] w-full mx-auto p-6 flex flex-col justify-between space-y-5">
-          {/* Interactive Attack Simulation Mode Toolbar */}
+        {/* Main Workspace Container */}
+        <main className="flex-1 max-w-[1440px] w-full mx-auto px-6 pt-3 space-y-6">
+          {/* Interactive WebSocket SET_MODE Preset Bar */}
           <AttackSimulatorPresetBar
             currentPreset={attackPreset}
             onSelectPreset={handleSelectAttackPreset}
           />
 
-          {/* 12-Column Desktop Grid (7 Columns Left, 5 Columns Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            {/* B. Left Column (7 Columns): Uncluttered Biometric Viewport */}
-            <div className="lg:col-span-7 flex flex-col">
+          {/* 12-Column Primary Stage: Signature C (7 Cols Left) + Signature D (5 Cols Right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Left 7 Columns — Signature C (Ref 2): Precision Corner-Reticle Biometric Scanner HUD */}
+            <div className="lg:col-span-7 flex flex-col justify-between">
               <BiometricViewport
                 videoRef={videoRef}
                 canvasRef={canvasRef}
@@ -179,26 +160,38 @@ export const App: React.FC = () => {
               />
             </div>
 
-            {/* C. Right Column (5 Columns): Structured Telemetry & Fusion Inspector */}
-            <div className="lg:col-span-5 flex flex-col space-y-4">
-              {/* 1. Primary Authenticity Verdict Card */}
+            {/* Right 5 Columns — Signature D (Ref 4): Eclipsed Horizon Score Card & Inner-Glow Frosted Pill Wall */}
+            <div className="lg:col-span-5 flex flex-col justify-between space-y-5">
               <AuthenticityVerdictCard fusion={telemetry?.fusion} />
-
-              {/* 2. 4-Plane Analytical Breakdown (Compact 2×2 Grid) */}
-              <PlaneAnalysisGrid
-                planeA={telemetry?.plane_a_ela}
-                planeB={telemetry?.plane_b_ear}
-                planeC={telemetry?.plane_c_fft}
-                neural={telemetry?.auxiliary_neural}
-              />
-
-              {/* 3. Collapsible Session Audit Log */}
               <SessionAuditLog
                 logs={auditLogs}
                 onExportReport={handleExportReport}
+                telemetry={telemetry}
               />
             </div>
           </div>
+
+          {/* Bottom 3-Column Bento Row — Signature E (Ref 1): Three Tall Obsidian Cards with Sub-Surface Cobalt 3D Visuals */}
+          <section className="pt-1">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-[#38BDF8] inline-block" />
+                <span className="text-[11px] font-geometric-display uppercase tracking-[0.22em] text-white/75 font-bold">
+                  MULTI-PLANE SUB-SURFACE FORENSIC ARCHITECTURE
+                </span>
+              </div>
+              <span className="text-[10px] font-mono-tabular tracking-[0.18em] text-white/40 uppercase">
+                PLANE A (ELA) • PLANE C (2D-FFT) • PLANE B + AUX (EAR / ViT)
+              </span>
+            </div>
+
+            <PlaneAnalysisGrid
+              planeA={telemetry?.plane_a_ela}
+              planeB={telemetry?.plane_b_ear}
+              planeC={telemetry?.plane_c_fft}
+              neural={telemetry?.auxiliary_neural}
+            />
+          </section>
         </main>
       </div>
     </div>

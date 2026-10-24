@@ -1,145 +1,204 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import type { EyeLandmark, FaceROI } from '../../services/types';
 
 interface FaceRoiOverlayProps {
   isGenuine?: boolean;
+  eyeLandmarks?: EyeLandmark[];
+  faceRoi?: FaceROI;
+  seamDivergence?: boolean;
 }
 
-export const FaceRoiOverlay: React.FC<FaceRoiOverlayProps> = ({ isGenuine = true }) => {
-  const primaryColor = isGenuine ? '#0097A7' : '#EAB308';
-  const glowColor = isGenuine ? 'rgba(0, 151, 167, 0.65)' : 'rgba(234, 179, 8, 0.65)';
+export const FaceRoiOverlay: React.FC<FaceRoiOverlayProps> = ({
+  isGenuine = true,
+  eyeLandmarks = [],
+  faceRoi,
+  seamDivergence = false,
+}) => {
+  const accentColor = isGenuine ? '#38BDF8' : '#FF6B00';
+  const bracketColor = isGenuine ? 'rgba(248, 250, 252, 0.92)' : '#FF6B00';
+
+  // Convert normalized face ROI to SVG [0..640, 0..400] coordinate space
+  const roiX = faceRoi ? Math.max(120, Math.min(260, faceRoi.x * 640)) : 195;
+  const roiY = faceRoi ? Math.max(45, Math.min(130, faceRoi.y * 400)) : 65;
+  const roiW = faceRoi ? Math.max(180, Math.min(290, faceRoi.width * 640)) : 250;
+  const roiH = faceRoi ? Math.max(210, Math.min(295, faceRoi.height * 400)) : 270;
+
+  const left = roiX;
+  const right = roiX + roiW;
+  const top = roiY;
+  const bottom = roiY + roiH;
+  const cornerLen = 28;
+
+  // Pick anchor points for the circuit-trace callouts (Ref 2)
+  const leftAnchor = eyeLandmarks.find((pt) => pt.eye === 'left' && pt.id === 'p1') || {
+    x: 0.41,
+    y: 0.42,
+  };
+  const rightAnchor = eyeLandmarks.find((pt) => pt.eye === 'right' && pt.id === 'p4') || {
+    x: 0.59,
+    y: 0.42,
+  };
+
+  const lx = leftAnchor.x * 640;
+  const ly = leftAnchor.y * 400;
+  const rx = rightAnchor.x * 640;
+  const ry = rightAnchor.y * 400;
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center select-none overflow-hidden">
-      {/* Central Biometric Cyber HUD Reticle */}
-      <div className="relative w-[54%] max-w-[280px] aspect-[3/4] flex flex-col items-center justify-center">
-        <svg
-          viewBox="0 0 320 420"
-          className="w-full h-full overflow-visible"
-          fill="none"
+    <div className="pointer-events-none absolute inset-0 z-20 select-none overflow-hidden">
+      {/* Horizontal Laser Scanline with Opposing Triangular Arrowheads (Ref 2) */}
+      <div
+        className="laser-scanline-sweep absolute left-[18%] right-[18%] flex items-center justify-between z-25"
+        style={{ height: '2px' }}
+      >
+        {/* Left inward arrowhead ► */}
+        <span
+          className="text-[10px] leading-none font-mono-tabular -ml-2"
+          style={{ color: accentColor, textShadow: `0 0 8px ${accentColor}` }}
         >
-          <defs>
-            <filter id="tealGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor={primaryColor} floodOpacity="0.8" />
-            </filter>
-          </defs>
+          ►
+        </span>
 
-          {/* 1. Geometric Targeting Brackets (Cyber L-Angles) */}
-          {/* Top-Left */}
-          <path
-            d="M 45 80 L 45 45 L 80 45"
-            stroke={primaryColor}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            filter="url(#tealGlow)"
-          />
-          {/* Top-Right */}
-          <path
-            d="M 240 45 L 275 45 L 275 80"
-            stroke={primaryColor}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            filter="url(#tealGlow)"
-          />
-          {/* Bottom-Left */}
-          <path
-            d="M 45 340 L 45 375 L 80 375"
-            stroke={primaryColor}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            filter="url(#tealGlow)"
-          />
-          {/* Bottom-Right */}
-          <path
-            d="M 240 375 L 275 375 L 275 340"
-            stroke={primaryColor}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            filter="url(#tealGlow)"
-          />
-
-          {/* 2. Biometric Facial Contour Outline */}
-          <ellipse
-            cx="160"
-            cy="205"
-            rx="105"
-            ry="145"
-            stroke={primaryColor}
-            strokeWidth="1.75"
-            strokeDasharray="8 6"
-            className="transition-colors duration-500"
-            style={{
-              filter: `drop-shadow(0 0 10px ${glowColor})`,
-            }}
-          />
-
-          {/* Inner subtle biometric guide ring */}
-          <ellipse
-            cx="160"
-            cy="205"
-            rx="97"
-            ry="135"
-            stroke="rgba(255, 255, 255, 0.12)"
-            strokeWidth="1"
-          />
-
-          {/* 3. Minimal Reticle Crosshair Ticks */}
-          {/* Top marker */}
-          <line x1="160" y1="36" x2="160" y2="52" stroke={primaryColor} strokeWidth="2" />
-          {/* Bottom marker */}
-          <line x1="160" y1="358" x2="160" y2="374" stroke={primaryColor} strokeWidth="2" />
-          {/* Left marker */}
-          <line x1="36" y1="205" x2="52" y2="205" stroke={primaryColor} strokeWidth="2" />
-          {/* Right marker */}
-          <line x1="268" y1="205" x2="284" y2="205" stroke={primaryColor} strokeWidth="2" />
-
-          {/* Eye Level Alignment Reference Line */}
-          <line
-            x1="85"
-            y1="175"
-            x2="235"
-            y2="175"
-            stroke={isGenuine ? 'rgba(0, 151, 167, 0.25)' : 'rgba(234, 179, 8, 0.25)'}
-            strokeWidth="1"
-            strokeDasharray="4 4"
-          />
-
-          {/* Mouth Level Alignment Reference Line */}
-          <line
-            x1="110"
-            y1="275"
-            x2="210"
-            y2="275"
-            stroke={isGenuine ? 'rgba(0, 151, 167, 0.20)' : 'rgba(234, 179, 8, 0.20)'}
-            strokeWidth="1"
-            strokeDasharray="3 3"
-          />
-        </svg>
-
-        {/* Pulsing Concentric Outer Radar Arc (Framer Motion) */}
-        <motion.div
-          className="absolute inset-0 rounded-full border border-[#0097A7]/20 pointer-events-none"
-          animate={{
-            scale: [1, 1.05, 1],
-            opacity: [0.3, 0.6, 0.3],
+        {/* Thin glowing laser beam */}
+        <div
+          className="flex-1 h-[1.5px] mx-1 relative"
+          style={{
+            background: `linear-gradient(90deg, ${accentColor} 0%, #FFFFFF 50%, ${accentColor} 100%)`,
+            boxShadow: `0 0 12px ${accentColor}, 0 0 24px ${accentColor}`,
           }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
+        >
+          <span
+            className="absolute -top-4 right-8 text-[9px] font-mono-tabular tracking-[0.16em] uppercase px-1.5 py-0.5 rounded bg-[#030714]/85 border border-white/15"
+            style={{ color: accentColor }}
+          >
+            Scanning...
+          </span>
+        </div>
+
+        {/* Right inward arrowhead ◄ */}
+        <span
+          className="text-[10px] leading-none font-mono-tabular -mr-2"
+          style={{ color: accentColor, textShadow: `0 0 8px ${accentColor}` }}
+        >
+          ◄
+        </span>
+      </div>
+
+      {/* Main Precision Vector Reticle & 12 Eye Landmarks Overlay */}
+      <svg viewBox="0 0 640 400" className="w-full h-full" preserveAspectRatio="none">
+        <defs>
+          <filter id="reticleGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor={accentColor} floodOpacity="0.85" />
+          </filter>
+        </defs>
+
+        {/* 1. Wide-Spaced Crisp 1.5px Corner L-Brackets around Face ROI (Ref 2) */}
+        <g stroke={bracketColor} strokeWidth="1.6" fill="none" strokeLinecap="square">
+          {/* Top-Left L-Bracket */}
+          <path d={`M ${left} ${top + cornerLen} L ${left} ${top} L ${left + cornerLen} ${top}`} />
+          {/* Top-Right L-Bracket */}
+          <path d={`M ${right - cornerLen} ${top} L ${right} ${top} L ${right} ${top + cornerLen}`} />
+          {/* Bottom-Left L-Bracket */}
+          <path d={`M ${left} ${bottom - cornerLen} L ${left} ${bottom} L ${left + cornerLen} ${bottom}`} />
+          {/* Bottom-Right L-Bracket */}
+          <path d={`M ${right - cornerLen} ${bottom} L ${right} ${bottom} L ${right} ${bottom - cornerLen}`} />
+        </g>
+
+        {/* Subtle Inner Optical Frame & Crosshair Ticks */}
+        <rect
+          x={left + 10}
+          y={top + 10}
+          width={roiW - 20}
+          height={roiH - 20}
+          rx={18}
+          fill="none"
+          stroke={seamDivergence ? 'rgba(255, 107, 0, 0.45)' : 'rgba(56, 189, 248, 0.16)'}
+          strokeWidth="1"
+          strokeDasharray={seamDivergence ? '5 3' : '2 6'}
         />
 
-        {/* Friendly Instructional Frosted Pill with Cyber Status Node */}
-        <div className="absolute -bottom-8 left-0 right-0 flex justify-center">
-          <div className="flex items-center gap-2 bg-[#0D121D]/90 backdrop-blur-md px-3.5 py-1 rounded-full border border-[#0097A7]/30 shadow-[0_0_12px_rgba(0,151,167,0.25)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7] animate-pulse shadow-[0_0_6px_#0097A7]" />
-            <span className="text-xs font-medium tracking-wide text-gray-200">
-              Position your face here.
-            </span>
-          </div>
-        </div>
-      </div>
+        {/* 2. Normalized 12 Eye Landmark Points (p1..p6 left & right) */}
+        {eyeLandmarks.map((pt, idx) => {
+          const cx = pt.x * 640;
+          const cy = pt.y * 400;
+          return (
+            <circle
+              key={`${pt.eye}-${pt.id}-${idx}`}
+              cx={cx}
+              cy={cy}
+              r="2.2"
+              fill="#FFFFFF"
+              stroke={accentColor}
+              strokeWidth="1"
+              filter="url(#reticleGlow)"
+            />
+          );
+        })}
+
+        {/* 3. Left Ocular Node Callout: ●─── Matched / Anomaly (Ref 2) */}
+        <g>
+          <circle cx={lx} cy={ly} r="4" fill={accentColor} filter="url(#reticleGlow)" />
+          <circle cx={lx} cy={ly} r="7.5" fill="none" stroke={accentColor} strokeWidth="1" strokeOpacity="0.6" />
+          <polyline
+            points={`${lx},${ly} ${lx - 26},${ly - 22} ${lx - 96},${ly - 22}`}
+            fill="none"
+            stroke={accentColor}
+            strokeWidth="1.2"
+          />
+          <rect
+            x={lx - 100}
+            y={ly - 40}
+            width="76"
+            height="16"
+            rx="4"
+            fill="rgba(3, 7, 20, 0.85)"
+            stroke={accentColor}
+            strokeWidth="0.8"
+          />
+          <text
+            x={lx - 62}
+            y={ly - 29}
+            textAnchor="middle"
+            fill="#F8FAFC"
+            fontSize="8.5"
+            fontFamily="JetBrains Mono, monospace"
+          >
+            {isGenuine ? '● Matched' : '▲ Anomaly'}
+          </text>
+        </g>
+
+        {/* 4. Right Facial/Ocular Node Callout: ●─── Matched / Seam Alert (Ref 2) */}
+        <g>
+          <circle cx={rx} cy={ry} r="4" fill={accentColor} filter="url(#reticleGlow)" />
+          <circle cx={rx} cy={ry} r="7.5" fill="none" stroke={accentColor} strokeWidth="1" strokeOpacity="0.6" />
+          <polyline
+            points={`${rx},${ry} ${rx + 28},${ry + 28} ${rx + 104},${ry + 28}`}
+            fill="none"
+            stroke={accentColor}
+            strokeWidth="1.2"
+          />
+          <rect
+            x={rx + 30}
+            y={ry + 10}
+            width="78"
+            height="16"
+            rx="4"
+            fill="rgba(3, 7, 20, 0.85)"
+            stroke={accentColor}
+            strokeWidth="0.8"
+          />
+          <text
+            x={rx + 69}
+            y={ry + 21}
+            textAnchor="middle"
+            fill="#F8FAFC"
+            fontSize="8.5"
+            fontFamily="JetBrains Mono, monospace"
+          >
+            {isGenuine ? '● Matched' : '▲ Mismatch'}
+          </text>
+        </g>
+      </svg>
     </div>
   );
 };

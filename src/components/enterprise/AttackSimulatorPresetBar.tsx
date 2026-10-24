@@ -13,80 +13,87 @@ export const AttackSimulatorPresetBar: React.FC<AttackSimulatorPresetBarProps> =
 }) => {
   const presets: {
     id: AttackSimulationPreset;
+    code: string;
     title: string;
     description: string;
     icon: React.ReactNode;
-    accentColor: string;
-    activeBorder: string;
+    isAttack: boolean;
   }[] = [
     {
       id: 'GENUINE_LIVE_USER',
-      title: '1. Genuine Live User',
-      description: 'Natural eye blinks, authentic biological dynamics',
-      icon: <ShieldCheck className="w-3.5 h-3.5 text-[#0097A7]" />,
-      accentColor: '#0097A7',
-      activeBorder: 'border-[#0097A7]/50 bg-[#0097A7]/[0.12] shadow-[0_0_16px_rgba(0,151,167,0.25)]',
+      code: 'MODE 01',
+      title: 'Genuine Live User',
+      description: 'Natural bilateral eye blinks, authentic Q=90 & spectral baseline',
+      icon: <ShieldCheck className="w-3.5 h-3.5 text-[#38BDF8]" />,
+      isAttack: false,
     },
     {
       id: 'STATIC_PHOTO_REPLAY',
-      title: '2. Static Photo / Replay',
-      description: 'Zero ocular movement, flat biological response',
-      icon: <Copy className="w-3.5 h-3.5 text-[#EAB308]" />,
-      accentColor: '#EAB308',
-      activeBorder: 'border-[#EAB308]/50 bg-[#EAB308]/[0.12] shadow-[0_0_16px_rgba(234,179,8,0.25)]',
+      code: 'MODE 02',
+      title: 'Static Photo / Screen Replay',
+      description: 'Frozen ocular landmarks, zero EAR variance (liveness ≤ 0.05)',
+      icon: <Copy className="w-3.5 h-3.5 text-[#FF6B00]" />,
+      isAttack: true,
     },
     {
       id: 'FACESWAP_BOUNDARY_SPLICE',
-      title: '3. Face-Swap Boundary Splice',
-      description: 'Digital boundary splicing and edge alterations',
-      icon: <Scissors className="w-3.5 h-3.5 text-amber-400" />,
-      accentColor: '#F59E0B',
-      activeBorder: 'border-amber-500/50 bg-amber-500/[0.12] shadow-[0_0_16px_rgba(245,158,11,0.25)]',
+      code: 'MODE 03',
+      title: 'Face-Swap Boundary Splice',
+      description: 'High Q=90 ELA compression divergence along facial mask seams',
+      icon: <Scissors className="w-3.5 h-3.5 text-[#FF6B00]" />,
+      isAttack: true,
     },
     {
       id: 'GAN_UPSAMPLING_STREAM',
-      title: '4. GAN Upsampling Stream',
-      description: 'Synthetic generative artifacts & neural manifold drift',
-      icon: <Sparkles className="w-3.5 h-3.5 text-indigo-400" />,
-      accentColor: '#1E3A8A',
-      activeBorder: 'border-indigo-500/50 bg-[#1E3A8A]/[0.35] shadow-[0_0_16px_rgba(30,58,138,0.4)]',
+      code: 'MODE 04',
+      title: 'GAN Upsampling Stream',
+      description: 'Periodic 2D-FFT high-pass checkerboard spikes & ViT drift',
+      icon: <Sparkles className="w-3.5 h-3.5 text-[#60A5FA]" />,
+      isAttack: true,
     },
   ];
 
   return (
-    <div className="w-full frosted-glass-card rounded-[18px] p-4 shadow-lg">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#0097A7] shadow-[0_0_8px_#0097A7]" />
-          <span className="text-xs uppercase font-semibold tracking-wider text-gray-300">
-            Forensic Attack Simulation Bench
+    <div className="w-full bg-[#0B0D13]/90 border border-white/[0.10] rounded-[22px] p-4 shadow-2xl backdrop-blur-xl">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
+        <div className="flex items-center gap-2.5">
+          <span className="w-2 h-2 rounded-full bg-[#38BDF8] shadow-[0_0_10px_#38BDF8]" />
+          <span className="text-[11px] font-geometric-display uppercase font-bold tracking-[0.2em] text-white/90">
+            WebSocket SET_MODE Preset Matrix
           </span>
         </div>
-        <span className="text-[11px] font-mono text-gray-400">
-          CYBER-THREAT MATRIX // MULTI-PLANE RESPONSE
+        <span className="text-[10px] font-mono-tabular tracking-[0.16em] text-white/45 uppercase">
+          DISPATCHING TO WS://LOCALHOST:8000/WS/STREAM
         </span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {presets.map((p) => {
           const isSelected = currentPreset === p.id;
+          const activeClass = isSelected
+            ? p.isAttack
+              ? 'frosted-pill-amber rounded-2xl text-white'
+              : 'frosted-pill-cyan rounded-2xl text-white'
+            : 'bg-white/[0.025] border border-white/[0.08] hover:border-white/[0.2] hover:bg-white/[0.05] rounded-2xl text-white/75';
+
           return (
             <button
               key={p.id}
               onClick={() => onSelectPreset(p.id)}
-              className={`p-3 text-left rounded-xl border transition-all cursor-pointer ${
-                isSelected
-                  ? `${p.activeBorder} text-white`
-                  : 'bg-[#0E131F]/50 border-white/[0.06] hover:bg-[#141B2B]/60 hover:border-white/[0.12] text-gray-300'
-              }`}
+              className={`p-3.5 text-left transition-all cursor-pointer ${activeClass}`}
             >
-              <div className="flex items-center gap-1.5 font-semibold text-xs">
-                {p.icon}
-                <span className={isSelected ? 'text-white font-bold' : 'text-gray-200'}>
-                  {p.title}
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <div className="flex items-center gap-1.5 font-semibold text-xs">
+                  {p.icon}
+                  <span className={isSelected ? 'text-white font-bold' : 'text-white/90'}>
+                    {p.title}
+                  </span>
+                </div>
+                <span className="text-[9px] font-mono-tabular px-2 py-0.5 rounded-full bg-black/40 border border-white/[0.1] text-white/60">
+                  {p.code}
                 </span>
               </div>
-              <p className="mt-1 text-[11px] text-gray-400 leading-tight">
+              <p className="text-[11px] text-white/55 leading-snug">
                 {p.description}
               </p>
             </button>
